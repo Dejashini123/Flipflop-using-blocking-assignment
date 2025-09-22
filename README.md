@@ -28,63 +28,140 @@ Blocking assignments execute sequentially in the given order, which makes it eas
 
 ### SR Flip-Flop (Blocking)
 ```verilog
+`timescale 1ns/1ps
 module sr_ff (
     input wire S, R, clk,
     output reg Q
 );
     always @(posedge clk) begin
-
-
-
+        if (S == 0 && R == 0)
+            Q = Q;
+        else if (S == 0 && R == 1)
+            Q = 0;
+        else if (S == 1 && R == 0)
+            Q = 1;
+        else if (S == 1 && R == 1)
+            Q = 1'bx;
+    end
 endmodule
 ```
 ### SR Flip-Flop Test bench 
 ```verilog
+module tb_sr_ff;
+    reg S, R, clk;
+    wire Q;
+
+    sr_ff uut (.S(S), .R(R), .clk(clk), .Q(Q));
+
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
+
+    initial begin
+        S=0; R=0; #10;  
+        S=1; R=0; #10;  
+        S=0; R=1; #10;  
+        S=1; R=1; #10;  
+        S=0; R=0; #10;  
+        $stop;
+    end
+endmodule
 
 
 
 ```
 #### SIMULATION OUTPUT
 
-------- paste the output here -------
+<img width="1918" height="1197" alt="image" src="https://github.com/user-attachments/assets/23dde995-1531-47cc-aaca-6b2a2fb6f3a2" />
+
 ---
 
 ### JK Flip-Flop (Blocking)
 ```verilog
+`timescale 1ns/1ps
 module jk_ff (
     input wire J, K, clk,
     output reg Q
 );
     always @(posedge clk) begin
-
-
-
+        if (J == 0 && K == 0)
+            Q = Q;
+        else if (J == 0 && K == 1)
+            Q = 0;
+        else if (J == 1 && K == 0)
+            Q = 1;
+        else if (J == 1 && K == 1)
+            Q = ~Q;
+    end
 endmodule
 ```
 ### JK Flip-Flop Test bench 
 ```verilog
+module tb_jk_ff;
+    reg J, K, clk;
+    wire Q;
+
+    jk_ff uut (.J(J), .K(K), .clk(clk), .Q(Q));
+
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;   // clock with 10ns period
+    end
+
+    initial begin
+        J=0; K=0; #10;   // Hold
+        J=1; K=0; #10;   // Set
+        J=0; K=1; #10;   // Reset
+        J=1; K=1; #10;   // Toggle
+        J=0; K=0; #10;   // Hold again
+        $stop;
+    end
+endmodule
 
 
 
 ```
 #### SIMULATION OUTPUT
 
-------- paste the output here -------
+<img width="1918" height="1197" alt="image" src="https://github.com/user-attachments/assets/3568f3ab-48b2-4127-8f6f-69081c870f23" />
+
 ---
 ### D Flip-Flop (Blocking)
 ```verilog
+`timescale 1ns/1ps
 module d_ff (
-    input wire d,clk,
+    input wire D, clk,
     output reg Q
 );
+    initial Q = 0;  // Initialize Q
     always @(posedge clk) begin
-
-
-
+        Q <= D;      // Use non-blocking assignment
+    end
 endmodule
 ```
 ### D Flip-Flop Test bench 
 ```verilog
+module tb_d_ff;
+    reg D, clk;
+    wire Q;
+
+    d_ff uut (.D(D), .clk(clk), .Q(Q));
+
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;  // Clock with 10ns period
+    end
+
+    initial begin
+        D = 0; #10;  
+        D = 1; #10;  
+        D = 0; #10;  
+        D = 1; #10;  
+        D = 0; #10;  
+        $stop;
+    end
+endmodule
 
 
 
@@ -92,22 +169,46 @@ endmodule
 
 #### SIMULATION OUTPUT
 
-------- paste the output here -------
+<img width="1917" height="1198" alt="image" src="https://github.com/user-attachments/assets/bcd3cc1b-bcb4-4958-8f5a-de73e0a38cd8" />
+
 ---
 ### T Flip-Flop (Blocking)
 ```verilog
-module d_ff (
-    input wire d,clk,
+`timescale 1ns/1ps
+module t_ff (
+    input wire T, clk,
     output reg Q
 );
+    initial Q = 0;  // Initialize Q
     always @(posedge clk) begin
-
-
-
+        Q <= T ? ~Q : Q;
+    end
 endmodule
 ```
 ### T Flip-Flop Test bench 
 ```verilog
+module tb_t_ff;
+    reg T, clk;
+    wire Q;
+
+    t_ff uut (.T(T), .clk(clk), .Q(Q));
+
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;  // Clock with 10ns period
+    end
+
+    initial begin
+        T = 0; 
+        #2;  // Make sure T is set before the first clock edge
+        T = 1; #10;  
+        T = 0; #10;  
+        T = 1; #10;  
+        T = 1; #10;  
+        T = 0; #10;  
+        $stop;
+    end
+endmodule
 
 
 
@@ -115,7 +216,8 @@ endmodule
 
 #### SIMULATION OUTPUT
 
-------- paste the output here -------
+<img width="1918" height="1197" alt="image" src="https://github.com/user-attachments/assets/e18e1b9a-6fc6-4960-a096-f20285bc16fe" />
+
 
 ---
 
